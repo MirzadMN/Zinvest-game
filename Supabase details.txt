@@ -1,0 +1,2 @@
+const SUPABASE_URL = 'https://blsgydcxoivtckihtmag.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsc2d5ZGN4b2l2dGNraWh0bWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMjkwNTYsImV4cCI6MjA5MzYwNTA1Nn0.DWPvB66OO5_KAHt_NGDHjSeU213p9iSCPTth7ecAeeo';
