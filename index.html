@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PROFIT BOUNCE — Trader's Calm</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g1:#00ff88;--g2:#00cc66;--g3:#007744;
+  --bg:#030d06;--gold:#c9a84c;--gold2:#e8c97a;
+  --red:#ff4455;--red2:#ff6677;
+  --text:#b8ffda;--muted:#4a8a62;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);}
+body{cursor:none;font-family:'DM Mono',monospace;}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+#game-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;cursor:none;}
+
+/* ── HUD ─────────────────────────────────────────── */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 44px;
+  background:linear-gradient(180deg,rgba(3,13,6,0.97) 0%,rgba(3,13,6,0) 100%);
+  pointer-events:none;
+}
+.hud-center{display:flex;flex-direction:column;align-items:center;}
+.brand{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);letter-spacing:3px;opacity:0.85;}
+.tagline{font-size:8px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.hb{display:flex;flex-direction:column;align-items:center;}
+.hl{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.hv{font-size:32px;font-weight:500;color:var(--g1);line-height:1;font-variant-numeric:tabular-nums;}
+.hv.gold{color:var(--gold2);}
+.hv.small{font-size:18px;color:var(--muted);}
+
+/* ── SETUP ───────────────────────────────────────── */
+#setup{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:20;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 40%,rgba(0,80,40,0.28) 0%,rgba(3,13,6,0.98) 70%);
+}
+.dlines{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;pointer-events:none;}
+.dl{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,0.12),transparent);width:70%;left:15%;animation:dlp 4s ease-in-out infinite;}
+.dl:nth-child(1){top:15%;}.dl:nth-child(2){top:35%;animation-delay:1.4s;}
+.dl:nth-child(3){top:65%;animation-delay:2.8s;}.dl:nth-child(4){top:85%;animation-delay:0.7s;}
+@keyframes dlp{0%,100%{opacity:0.2;}50%{opacity:0.55;}}
+.si{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:430px;padding:0 24px;}
+.s-eye{font-size:10px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;}
+.s-title{font-family:'Playfair Display',serif;font-size:clamp(36px,7vw,64px);color:var(--g1);letter-spacing:2px;line-height:1;margin-bottom:8px;text-shadow:0 0 48px rgba(0,255,136,0.32);}
+.s-title span{color:var(--gold);}
+.s-sub{font-size:11px;color:var(--muted);text-align:center;line-height:2;margin-bottom:28px;max-width:310px;}
+.s-card{width:100%;background:rgba(7,26,14,0.88);border:1px solid rgba(0,255,136,0.13);border-radius:16px;padding:22px 26px;display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.field{display:flex;align-items:center;gap:13px;}
+.field label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;width:54px;flex-shrink:0;}
+.field input[type=text]{flex:1;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.17);color:var(--g1);padding:9px 12px;border-radius:8px;font-family:'DM Mono',monospace;font-size:14px;letter-spacing:1px;outline:none;transition:border-color 0.2s;}
+.field input[type=text]:focus{border-color:rgba(0,255,136,0.42);}
+.field input[type=color]{width:50px;height:38px;border-radius:8px;border:1px solid rgba(0,255,136,0.17);background:rgba(0,255,136,0.04);cursor:pointer;padding:3px;}
+#btn-play{width:100%;padding:14px;background:linear-gradient(135deg,#005530,var(--g2));border:none;color:#030d06;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;letter-spacing:3px;font-family:'DM Mono',monospace;text-transform:uppercase;transition:all 0.2s;box-shadow:0 4px 24px rgba(0,255,136,0.16);}
+#btn-play:hover{background:linear-gradient(135deg,var(--g2),var(--g1));transform:translateY(-1px);}
+.s-hint{font-size:9px;color:var(--muted);letter-spacing:1px;opacity:0.5;margin-top:12px;}
+
+/* ── GAME OVER / SCORECARD ───────────────────────── */
+#gameover{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:20;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 50%,rgba(0,50,25,0.32) 0%,rgba(3,13,6,0.97) 70%);
+  overflow-y:auto;padding:24px;
+}
+.go-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:620px;}
+.go-eye{font-size:10px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;}
+.go-title{font-family:'Playfair Display',serif;font-size:clamp(26px,5vw,48px);color:var(--gold);margin-bottom:4px;text-shadow:0 0 28px rgba(201,168,76,0.32);}
+.go-sub{font-size:11px;color:var(--muted);margin-bottom:28px;letter-spacing:1px;}
+
+/* scorecard card */
+.scorecard{width:100%;background:rgba(7,26,14,0.9);border:1px solid rgba(0,255,136,0.13);border-radius:18px;overflow:hidden;margin-bottom:24px;}
+.sc-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:rgba(0,255,136,0.04);border-bottom:1px solid rgba(0,255,136,0.08);}
+.sc-username{font-size:16px;color:var(--gold2);letter-spacing:1px;}
+.sc-date{font-size:10px;color:var(--muted);}
+
+/* main scores row */
+.sc-scores{display:flex;border-bottom:1px solid rgba(0,255,136,0.07);}
+.sc-score-block{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 10px;}
+.sc-score-block+.sc-score-block{border-left:1px solid rgba(0,255,136,0.07);}
+.sc-sl{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.sc-sv{font-size:36px;font-weight:500;color:var(--g1);line-height:1;font-variant-numeric:tabular-nums;}
+.sc-sv.gold{color:var(--gold2);}
+.sc-sv.new{color:var(--g1);position:relative;}
+.new-badge{font-size:9px;color:var(--bg);background:var(--g1);padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:1px;font-weight:500;}
+
+/* breakdown grid */
+.sc-breakdown{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(0,255,136,0.07);}
+.sc-brow{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:8px;}
+.sc-brow+.sc-brow{border-top:1px solid rgba(0,255,136,0.05);}
+.sc-brow:nth-child(2){border-left:1px solid rgba(0,255,136,0.07);}
+.sc-brow:nth-child(4){border-left:1px solid rgba(0,255,136,0.07);}
+.sc-brow:nth-child(6){border-left:1px solid rgba(0,255,136,0.07);}
+.sc-bl{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.sc-bv{font-size:14px;color:var(--text);font-weight:500;}
+.sc-bv.pos{color:var(--g1);}
+.sc-bv.neg{color:var(--red2);}
+.sc-bv.gold{color:var(--gold2);}
+
+/* bonus log */
+.sc-log{padding:14px 24px;}
+.sc-log-title{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.sc-log-items{display:flex;flex-wrap:wrap;gap:6px;}
+.sc-log-item{font-size:10px;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;}
+.sc-log-item.pos{background:rgba(0,255,136,0.1);color:var(--g1);border:1px solid rgba(0,255,136,0.2);}
+.sc-log-item.neg{background:rgba(255,68,85,0.1);color:var(--red2);border:1px solid rgba(255,68,85,0.2);}
+.sc-log-empty{font-size:10px;color:var(--muted);font-style:italic;}
+
+/* leaderboard section */
+.sc-lb{padding:14px 24px;border-top:1px solid rgba(0,255,136,0.07);}
+.sc-lb-title{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.sc-lb-rows{}
+.sc-lb-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(0,255,136,0.04);}
+.sc-lb-row:last-child{border-bottom:none;}
+.sc-lb-rank{font-size:11px;color:var(--muted);width:22px;flex-shrink:0;text-align:center;}
+.sc-lb-name{font-size:12px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-lb-name.me{color:var(--gold2);}
+.sc-lb-score{font-size:13px;color:var(--g1);font-weight:500;flex-shrink:0;}
+.sc-lb-loading{font-size:10px;color:var(--muted);font-style:italic;padding:6px 0;}
+
+.go-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(11px,1.6vw,13px);color:var(--muted);max-width:500px;text-align:center;line-height:1.9;margin-bottom:28px;opacity:0.8;}
+#btn-again{padding:12px 48px;background:linear-gradient(135deg,#005530,var(--g2));border:none;color:#030d06;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;letter-spacing:3px;font-family:'DM Mono',monospace;text-transform:uppercase;transition:all 0.2s;}
+#btn-again:hover{background:linear-gradient(135deg,var(--g2),var(--g1));transform:translateY(-1px);}
+
+/* pops */
+.pop{position:fixed;pointer-events:none;z-index:15;font-family:'DM Mono',monospace;font-weight:500;animation:popUp 1s ease-out forwards;}
+@keyframes popUp{0%{opacity:1;transform:translateY(0) scale(1);}60%{opacity:1;}100%{opacity:0;transform:translateY(-65px) scale(1.05);}}
+
+#db-bar{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:10;font-size:9px;color:rgba(74,138,98,0.4);letter-spacing:1px;pointer-events:none;}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<canvas id="game-canvas"></canvas>
+
+<!-- HUD: only score + best during game -->
+<div id="hud">
+  <div class="hb"><div class="hl">Score</div><div class="hv" id="hs">0</div></div>
+  <div class="hud-center">
+    <div class="brand">PROFIT BOUNCE</div>
+    <div class="tagline">Breathe · Focus · Recover</div>
+  </div>
+  <div class="hb"><div class="hl">My Best</div><div class="hv gold small" id="hbest">0</div></div>
+</div>
+
+<!-- Setup -->
+<div id="setup">
+  <div class="dlines"><div class="dl"></div><div class="dl"></div><div class="dl"></div><div class="dl"></div></div>
+  <div class="si">
+    <div class="s-eye">Trader's Sanctuary</div>
+    <div class="s-title">PROFIT<br/><span>BOUNCE</span></div>
+    <div class="s-sub">One ball. One breath. One life.<br/>Move your mouse — keep it alive.<br/>Every bounce is a point.</div>
+    <div class="s-card">
+      <div class="field"><label>Name</label><input type="text" id="iname" value="" maxlength="16" placeholder="your name" spellcheck="false"/></div>
+      <div class="field"><label>Word</label><input type="text" id="iword" value="PROFIT" maxlength="10" spellcheck="false"/></div>
+      <div class="field"><label>Color</label><input type="color" id="icolor" value="#00ff88"/></div>
+    </div>
+    <button id="btn-play">Begin Session</button>
+    <div class="s-hint">Move mouse · Bounce ball · Catch bonuses · Avoid traps</div>
+  </div>
+</div>
+
+<!-- Game Over + Full Scorecard -->
+<div id="gameover">
+  <div class="go-inner">
+    <div class="go-eye">Session Complete</div>
+    <div class="go-title" id="go-title">Well Played</div>
+    <div class="go-sub" id="go-sub">Your discipline is your edge.</div>
+
+    <div class="scorecard">
+      <!-- header -->
+      <div class="sc-header">
+        <div class="sc-username" id="sc-username">Trader</div>
+        <div class="sc-date" id="sc-date"></div>
+      </div>
+
+      <!-- main scores -->
+      <div class="sc-scores">
+        <div class="sc-score-block">
+          <div class="sc-sl">This Session</div>
+          <div class="sc-sv" id="sc-session">0</div>
+        </div>
+        <div class="sc-score-block">
+          <div class="sc-sl">Today's Best</div>
+          <div class="sc-sv gold" id="sc-best">0</div>
+        </div>
+        <div class="sc-score-block">
+          <div class="sc-sl">Today's #1</div>
+          <div class="sc-sv gold" id="sc-top">—</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:3px;" id="sc-topname">—</div>
+        </div>
+      </div>
+
+      <!-- breakdown -->
+      <div class="sc-breakdown">
+        <div class="sc-brow"><span class="sc-bl">Base Bounces</span><span class="sc-bv pos" id="sc-bounces">0</span></div>
+        <div class="sc-brow"><span class="sc-bl">Bonus Gains</span><span class="sc-bv pos" id="sc-bgains">+0</span></div>
+        <div class="sc-brow"><span class="sc-bl">Penalty Hits</span><span class="sc-bv neg" id="sc-bneg">0</span></div>
+        <div class="sc-brow"><span class="sc-bl">Penalty Total</span><span class="sc-bv neg" id="sc-bpenalty">−0</span></div>
+        <div class="sc-brow"><span class="sc-bl">Speed Reached</span><span class="sc-bv gold" id="sc-speed">1.0×</span></div>
+        <div class="sc-brow"><span class="sc-bl">Net Score</span><span class="sc-bv pos" id="sc-net">0</span></div>
+      </div>
+
+      <!-- bonus event log -->
+      <div class="sc-log">
+        <div class="sc-log-title">Bonus &amp; Penalty Events</div>
+        <div class="sc-log-items" id="sc-log-items"><span class="sc-log-empty">no events this session</span></div>
+      </div>
+
+      <!-- today's leaderboard -->
+      <div class="sc-lb">
+        <div class="sc-lb-title">Today's Leaderboard</div>
+        <div class="sc-lb-rows" id="sc-lb-rows"><div class="sc-lb-loading">loading...</div></div>
+      </div>
+    </div>
+
+    <div class="go-quote" id="go-quote"></div>
+    <button id="btn-again">New Session</button>
+  </div>
+</div>
+
+<div id="db-bar"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  SUPABASE CONFIG — replace these values
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://blsgydcxoivtckihtmag.supabase.co/rest/v1/';
+const SUPABASE_KEY = 'Ysb_publishable_tMPKgegFm8i6YoXSuX9vnQ_BeNL9w0F';
+const DB_ON = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+document.getElementById('db-bar').textContent = DB_ON
+  ? '' : '[ offline mode — add Supabase keys to enable live leaderboard ]';
+
+// ── DB ────────────────────────────────────
+async function dbFetch(path,opts={}){
+  if(!DB_ON) return null;
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json','Prefer':opts.prefer||'return=representation'},
+      ...opts});
+    return r.ok?r.json():null;
+  }catch{return null;}
+}
+async function submitScore(username,score){
+  if(!DB_ON) return;
+  const today=new Date().toISOString().split('T')[0];
+  const ex=await dbFetch(`scores?username=eq.${encodeURIComponent(username)}&date=eq.${today}&select=id,score`);
+  if(ex&&ex.length>0){
+    if(score>ex[0].score)
+      await dbFetch(`scores?id=eq.${ex[0].id}`,{method:'PATCH',prefer:'return=minimal',
+        body:JSON.stringify({score,updated_at:new Date().toISOString()})});
+  } else {
+    await dbFetch('scores',{method:'POST',prefer:'return=minimal',
+      body:JSON.stringify({username,score,date:today})});
+  }
+}
+async function loadLeaderboard(){
+  const today=new Date().toISOString().split('T')[0];
+  return await dbFetch(`scores?date=eq.${today}&order=score.desc&limit=10&select=username,score`)||[];
+}
+async function loadMyBest(username){
+  const today=new Date().toISOString().split('T')[0];
+  const d=await dbFetch(`scores?username=eq.${encodeURIComponent(username)}&date=eq.${today}&select=score&order=score.desc&limit=1`);
+  return(d&&d.length)?d[0].score:0;
+}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// ── Canvas ────────────────────────────────
+const bgC=document.getElementById('bg-canvas'),bgCtx=bgC.getContext('2d');
+const gc=document.getElementById('game-canvas'),ctx=gc.getContext('2d');
+let W,H;
+function resize(){W=window.innerWidth;H=window.innerHeight;bgC.width=W;bgC.height=H;gc.width=W;gc.height=H;}
+resize();window.addEventListener('resize',resize);
+
+const BALL_R=13,BASE_SPD=3.5;
+let mx=0,bx,by,vx,vy;
+let score=0,bounces=0,speedMult=1,myBest=0;
+let bword='PROFIT',bcolor='#00ff88',currentUser='Trader';
+let running=false,fid,bgFid,particles=[],prizes=[];
+
+// session stats for scorecard
+let statBonusGains=0,statPenalties=0,statPenaltyTotal=0,statMaxSpeed=1;
+let eventLog=[]; // {label, pts, neg}
+
+function getSpeedTarget(b){
+  const thr=[5,9,13,16,19,22,24,26,28,30,32,34,36,38,40];
+  let l=0;for(const t of thr){if(b>=t)l++;else break;}
+  return 1+l*0.18;
+}
+
+const QUOTES=[
+  '"The market is a device for transferring money from the impatient to the patient." — Buffett',
+  '"Risk comes from not knowing what you are doing." — Warren Buffett',
+  '"In investing, what is comfortable is rarely profitable." — Robert Arnott',
+  '"Cut your losses short and let your profits run." — Trader\'s Wisdom',
+  '"Every loss is a lesson. Every lesson is a gain."',
+  '"The four most dangerous words: This time it\'s different." — Templeton',
+  '"Patience is not the ability to wait — it\'s keeping a good attitude while waiting."',
+  '"Breathe. The market will open again tomorrow."',
+  '"Every master was once a disaster." — T. Harv Eker',
+  '"Resilience is the ultimate edge."',
+];
+const BG_WORDS=['NIFTY','SENSEX','PROFIT','RALLY','BULLS','SURGE','BREAKOUT','MOMENTUM',
+  'UPTREND','ALPHA','GAIN','RETURNS','RECOVERY','GROWTH','WEALTH','COMPOUND',
+  'DIVIDENDS','BULLISH','BOUNCE','PATIENCE','RESILIENCE','DISCIPLINE','FOCUS',
+  'CALM','BREATHE','CLARITY','RELIANCE','HDFC','INFY','TCS','WIPRO','BAJAJ',
+  '▲ NIFTY50','▲ BANKNIFTY','▲ MIDCAP','FII','DII','₹','▲','◈','⬡','✦'];
+
+let floaters=[];
+function initF(){
+  floaters=[];
+  for(let i=0;i<26;i++) floaters.push({
+    w:BG_WORDS[Math.floor(Math.random()*BG_WORDS.length)],
+    x:Math.random()*W,y:Math.random()*H,
+    vx:(Math.random()-0.5)*0.28,vy:-0.11-Math.random()*0.19,
+    a:0.04+Math.random()*0.08,sz:10+Math.random()*13,
+    c:Math.random()<0.7?'#00cc66':'#c9a84c'});
+}
+initF();
+
+function drawBg(){
+  bgCtx.clearRect(0,0,W,H);
+  bgCtx.fillStyle='#030d06';bgCtx.fillRect(0,0,W,H);
+  const rg=bgCtx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.55);
+  rg.addColorStop(0,'rgba(0,65,32,0.14)');rg.addColorStop(1,'rgba(0,0,0,0)');
+  bgCtx.fillStyle=rg;bgCtx.fillRect(0,0,W,H);
+  for(let l=0;l<3;l++){
+    bgCtx.beginPath();bgCtx.strokeStyle=`rgba(0,${68+l*26},${32+l*9},0.05)`;bgCtx.lineWidth=1;
+    const off=Date.now()*0.00007+l*2.1;
+    for(let x=0;x<=W;x+=4){const y=H*0.28+Math.sin(x*0.007+off)*36+l*H*0.16;x===0?bgCtx.moveTo(x,y):bgCtx.lineTo(x,y);}
+    bgCtx.stroke();
+  }
+  for(const f of floaters){
+    f.x+=f.vx;f.y+=f.vy;
+    if(f.x<-120)f.x=W+50;if(f.x>W+120)f.x=-50;
+    if(f.y<-30){f.y=H+20;f.x=Math.random()*W;}
+    bgCtx.save();bgCtx.globalAlpha=f.a;
+    bgCtx.font=`300 ${f.sz}px 'DM Mono',monospace`;bgCtx.fillStyle=f.c;bgCtx.fillText(f.w,f.x,f.y);
+    bgCtx.restore();
+  }
+  bgCtx.strokeStyle='rgba(0,255,136,0.018)';bgCtx.lineWidth=1;
+  for(let x=0;x<W;x+=80){bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,H);bgCtx.stroke();}
+  for(let y=0;y<H;y+=80){bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(W,y);bgCtx.stroke();}
+  bgFid=requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ── Helpers ───────────────────────────────
+function PW(){return Math.max(80,Math.min(160,W*0.11));}
+function padX(){return Math.max(0,Math.min(W-PW(),mx-PW()/2));}
+const PADY=()=>H-22;const PH=12;
+
+function resetBall(){
+  bx=W/2;by=H*0.32;
+  const a=-(Math.PI/2)+(Math.random()-0.5)*0.7;
+  vx=Math.cos(a)*BASE_SPD*speedMult;vy=Math.sin(a)*BASE_SPD*speedMult;
+}
+function spawnP(x,y,col,n){
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=1+Math.random()*3.5;
+    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1.5+Math.random()*2.5,c:col,a:1,d:0.025+Math.random()*0.03});}
+}
+function pop(x,y,txt,col){
+  const el=document.createElement('div');el.className='pop';el.textContent=txt;
+  el.style.cssText=`left:${x-32}px;top:${y-18}px;font-size:13px;color:${col||'#00ff88'};`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+}
+
+// ── PRIZE TYPES — positive + negative ────
+// neg:true = penalty, shrink:true = shrinks paddle, half:true = halves score
+const PRIZE_TYPES=[
+  // POSITIVE
+  {label:'▲ +5',  pts:5,  neg:false, c:'#c9a84c'},
+  {label:'▲ +10', pts:10, neg:false, c:'#e8c97a'},
+  {label:'RALLY +3', pts:3, neg:false, c:'#44ffaa'},
+  {label:'SURGE ×2', pts:0, multi:true, neg:false, c:'#00ffcc'},
+  {label:'ALPHA +8', pts:8, neg:false, c:'#88ff44'},
+  // NEGATIVE
+  {label:'CRASH −5',  pts:-5,  neg:true, c:'#ff4455'},
+  {label:'STOP −3',   pts:-3,  neg:true, c:'#ff6677'},
+  {label:'BEAR −8',   pts:-8,  neg:true, c:'#ff3344'},
+  {label:'HALT ÷2',   pts:0,   neg:true, half:true, c:'#ff5566'},
+  {label:'SLIP −10',  pts:-10, neg:true, c:'#ff2233'},
+];
+// weight positive more than negative (6 pos : 4 neg types, but we pick randomly from above)
+// actual ratio via spawn: 60% positive, 40% negative
+function mkPrize(){
+  let pool;
+  if(Math.random()<0.6) pool=PRIZE_TYPES.filter(p=>!p.neg);
+  else pool=PRIZE_TYPES.filter(p=>p.neg);
+  const o=pool[Math.floor(Math.random()*pool.length)];
+  return{x:60+Math.random()*(W-120),y:60+Math.random()*(H*0.42),r:17,
+    vx:(Math.random()-0.5)*1.3,vy:0.28+Math.random()*0.3,ttl:380,alpha:1,...o};
+}
+
+function updateHUD(){
+  document.getElementById('hs').textContent=Math.max(0,score);
+  document.getElementById('hbest').textContent=myBest;
+}
+
+// ── Game Loop ─────────────────────────────
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  const pw=PW(),px=padX(),pady=PADY();
+  bx+=vx;by+=vy;
+  if(bx-BALL_R<0){bx=BALL_R;vx=Math.abs(vx);spawnP(bx,by,bcolor,4);}
+  if(bx+BALL_R>W){bx=W-BALL_R;vx=-Math.abs(vx);spawnP(bx,by,bcolor,4);}
+  if(by-BALL_R<0){by=BALL_R;vy=Math.abs(vy);spawnP(bx,by,bcolor,4);}
+
+  // paddle hit
+  if(vy>0&&by+BALL_R>=pady-PH&&by+BALL_R<=pady+9&&bx>=px-4&&bx<=px+pw+4){
+    by=pady-PH-BALL_R;
+    const rel=(bx-(px+pw/2))/(pw/2);
+    vx=rel*BASE_SPD*speedMult*1.4;vy=-Math.abs(vy);
+    bounces++;score++;
+    const nm=getSpeedTarget(bounces);
+    if(nm>speedMult){speedMult=nm;pop(bx,pady-PH-20,'▲ FASTER','#ffdd44');}
+    if(speedMult>statMaxSpeed)statMaxSpeed=speedMult;
+    const spd=Math.sqrt(vx*vx+vy*vy),tgt=BASE_SPD*speedMult;
+    if(spd>0){vx=vx/spd*tgt;vy=vy/spd*tgt;}
+    spawnP(bx,pady-PH,bcolor,9);
+    if(score>0&&score%25===0)pop(bx,pady-PH-20,'▲ '+score+' pts!','#c9a84c');
+    if(score>myBest)myBest=score;
+  }
+
+  // prize spawn
+  if(prizes.length<3&&Math.random()<0.004)prizes.push(mkPrize());
+  for(const p of prizes){p.x+=p.vx;p.y+=p.vy;if(p.x<p.r||p.x>W-p.r)p.vx*=-1;p.ttl--;if(p.ttl<80)p.alpha=p.ttl/80;}
+
+  // ball vs prize
+  for(let i=prizes.length-1;i>=0;i--){
+    const p=prizes[i];const dx=bx-p.x,dy=by-p.y;
+    if(Math.sqrt(dx*dx+dy*dy)<BALL_R+p.r){
+      spawnP(p.x,p.y,p.c,p.neg?8:16);
+      let eventPts=0;
+      if(p.multi){
+        const g=score;score=score*2;eventPts=g;
+        pop(p.x,p.y,'×2! +'+g,p.c);
+        statBonusGains+=g;
+        eventLog.push({label:p.label+' +'+g,neg:false});
+      } else if(p.half){
+        const lost=Math.floor(score/2);score=Math.floor(score/2);
+        pop(p.x,p.y,'HALT! −'+lost,p.c);
+        statPenalties++;statPenaltyTotal+=lost;
+        eventLog.push({label:p.label+' −'+lost,neg:true});
+      } else if(p.neg){
+        const pen=Math.abs(p.pts);score=Math.max(0,score+p.pts);
+        pop(p.x,p.y,p.label,p.c);
+        statPenalties++;statPenaltyTotal+=pen;
+        eventLog.push({label:p.label,neg:true});
+      } else {
+        score+=p.pts;eventPts=p.pts;
+        pop(p.x,p.y,p.label,p.c);
+        statBonusGains+=p.pts;
+        eventLog.push({label:p.label,neg:false});
+      }
+      if(score>myBest)myBest=score;
+      prizes.splice(i,1);
+    }
+  }
+  prizes=prizes.filter(p=>p.ttl>0);
+
+  // draw prizes
+  for(const p of prizes){
+    ctx.save();ctx.globalAlpha=p.alpha;ctx.shadowColor=p.c;ctx.shadowBlur=p.neg?14:10;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.c+(p.neg?'22':'18');ctx.fill();
+    ctx.strokeStyle=p.c;ctx.lineWidth=p.neg?2:1.5;ctx.stroke();
+    // pulsing ring for negatives
+    if(p.neg&&Math.sin(Date.now()*0.01)>0){
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r+4,0,Math.PI*2);
+      ctx.strokeStyle=p.c+'44';ctx.lineWidth=1;ctx.stroke();
+    }
+    ctx.font=`500 8px 'DM Mono',monospace`;ctx.fillStyle=p.c;
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowBlur=0;
+    ctx.fillText(p.label,p.x,p.y);ctx.restore();
+  }
+
+  // particles
+  for(const p of particles){
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.07;p.a-=p.d;
+    ctx.save();ctx.globalAlpha=Math.max(0,p.a);
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c;ctx.fill();ctx.restore();
+  }
+  particles=particles.filter(p=>p.a>0);
+
+  // paddle
+  ctx.save();ctx.shadowColor=bcolor;ctx.shadowBlur=15;
+  const pg=ctx.createLinearGradient(px,0,px+pw,0);
+  pg.addColorStop(0,'rgba(0,70,35,0.5)');pg.addColorStop(0.5,bcolor);pg.addColorStop(1,'rgba(0,70,35,0.5)');
+  ctx.fillStyle=pg;ctx.beginPath();ctx.roundRect(px,pady-PH,pw,PH,6);ctx.fill();
+  ctx.strokeStyle=bcolor+'60';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+
+  // ball
+  ctx.save();ctx.shadowColor=bcolor;ctx.shadowBlur=20;
+  ctx.beginPath();ctx.arc(bx,by,BALL_R+2,0,Math.PI*2);ctx.strokeStyle=bcolor+'1e';ctx.lineWidth=3;ctx.stroke();
+  ctx.beginPath();ctx.arc(bx,by,BALL_R,0,Math.PI*2);
+  const bg2=ctx.createRadialGradient(bx-3,by-3,1,bx,by,BALL_R);
+  bg2.addColorStop(0,bcolor+'55');bg2.addColorStop(1,bcolor+'18');
+  ctx.fillStyle=bg2;ctx.fill();ctx.strokeStyle=bcolor;ctx.lineWidth=1.6;ctx.stroke();
+  const fs=Math.max(5,Math.floor(19/Math.max(1,bword.length)));
+  ctx.font=`500 ${fs}px 'DM Mono',monospace`;
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowBlur=0;
+  ctx.fillText(bword,bx,by);ctx.restore();
+
+  ctx.beginPath();ctx.arc(mx,pady-PH/2,3,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.4)';ctx.fill();
+
+  if(by-BALL_R>H+10){endGame();return;}
+  updateHUD();
+  fid=requestAnimationFrame(loop);
+}
+
+// ── Flow ──────────────────────────────────
+async function startGame(){
+  currentUser=(document.getElementById('iname').value.trim())||'Trader';
+  bword=(document.getElementById('iword').value.toUpperCase().trim())||'PROFIT';
+  bcolor=document.getElementById('icolor').value;
+  const dbBest=await loadMyBest(currentUser);
+  myBest=Math.max(myBest,dbBest);
+  score=0;bounces=0;speedMult=1;
+  statBonusGains=0;statPenalties=0;statPenaltyTotal=0;statMaxSpeed=1;
+  eventLog=[];particles=[];prizes=[];
+  resetBall();mx=W/2;
+  document.getElementById('setup').style.display='none';
+  document.getElementById('gameover').style.display='none';
+  running=true;if(fid)cancelAnimationFrame(fid);loop();
+}
+
+async function endGame(){
+  running=false;cancelAnimationFrame(fid);
+  if(score>myBest)myBest=score;
+  await submitScore(currentUser,myBest);
+
+  // populate scorecard
+  const now=new Date();
+  document.getElementById('sc-username').textContent=currentUser;
+  document.getElementById('sc-date').textContent=now.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('sc-session').textContent=score;
+  document.getElementById('sc-best').textContent=myBest;
+  document.getElementById('sc-bounces').textContent=bounces;
+  document.getElementById('sc-bgains').textContent='+'+statBonusGains;
+  document.getElementById('sc-bneg').textContent=statPenalties+' hits';
+  document.getElementById('sc-bpenalty').textContent='−'+statPenaltyTotal;
+  document.getElementById('sc-speed').textContent=statMaxSpeed.toFixed(1)+'×';
+  document.getElementById('sc-net').textContent=score;
+
+  // event log
+  const logEl=document.getElementById('sc-log-items');
+  if(eventLog.length===0){
+    logEl.innerHTML='<span class="sc-log-empty">no bonus events this session</span>';
+  } else {
+    logEl.innerHTML=eventLog.map(e=>`<span class="sc-log-item ${e.neg?'neg':'pos'}">${esc(e.label)}</span>`).join('');
+  }
+
+  // leaderboard
+  const rows=await loadLeaderboard();
+  const lbEl=document.getElementById('sc-lb-rows');
+  const medals=['🥇','🥈','🥉'];
+  if(rows.length){
+    const top=rows[0];
+    document.getElementById('sc-top').textContent=top.score;
+    document.getElementById('sc-topname').textContent=top.username;
+    lbEl.innerHTML=rows.slice(0,8).map((r,i)=>{
+      const me=r.username.toLowerCase()===currentUser.toLowerCase();
+      return`<div class="sc-lb-row"><span class="sc-lb-rank">${medals[i]||(i+1)}</span><span class="sc-lb-name${me?' me':''}">${esc(r.username)}${me?' ◀':''}</span><span class="sc-lb-score">${r.score}</span></div>`;
+    }).join('');
+  } else {
+    document.getElementById('sc-top').textContent=myBest;
+    document.getElementById('sc-topname').textContent=currentUser;
+    lbEl.innerHTML='<div class="sc-lb-loading">no other scores today yet</div>';
+  }
+
+  const t=score>=30?'Masterful':score>=15?'Well Played':score>=5?'Good Session':'Keep Breathing';
+  const s=score>=30?'The market bows to your patience.':score>=15?'Your discipline is your edge.':score>=5?'Every session builds resilience.':'Tomorrow is a new session.';
+  document.getElementById('go-title').textContent=t;
+  document.getElementById('go-sub').textContent=s;
+  document.getElementById('go-quote').textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('gameover').style.display='flex';
+  updateHUD();
+}
+
+window.addEventListener('mousemove',e=>{mx=e.clientX;});
+window.addEventListener('touchmove',e=>{e.preventDefault();mx=e.touches[0].clientX;},{passive:false});
+document.getElementById('btn-play').addEventListener('click',startGame);
+document.getElementById('btn-again').addEventListener('click',()=>{
+  document.getElementById('setup').style.display='flex';
+  document.getElementById('gameover').style.display='none';
+});
+</script>
+</body>
+</html>
