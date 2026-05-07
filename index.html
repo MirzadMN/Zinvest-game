@@ -35,6 +35,81 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .hv.gold{color:var(--gold2);}
 .hv.small{font-size:18px;color:var(--muted);}
 
+/* ── SIDE SCOREBOARDS (home screen only, inside #setup) ── */
+#sidebar-left, #sidebar-right {
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:220px;
+  background:rgba(4,18,9,0.95);
+  border:1px solid rgba(0,255,136,0.15);
+  border-radius:16px;
+  overflow:hidden;
+  pointer-events:none;
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
+}
+#sidebar-left{left:20px;}
+#sidebar-right{right:20px;}
+@media(max-width:960px){#sidebar-left,#sidebar-right{display:none;}}
+
+.sb-header{
+  padding:13px 16px 11px;
+  background:rgba(0,255,136,0.05);
+  border-bottom:1px solid rgba(0,255,136,0.1);
+  display:flex;align-items:center;gap:8px;
+}
+.sb-header-icon{font-size:14px;}
+.sb-header-text{display:flex;flex-direction:column;}
+.sb-title{font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;font-weight:500;}
+.sb-subtitle{font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+
+/* rank rows shared */
+.sb-rows{padding:6px 0;}
+.sb-row{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 16px;
+  border-bottom:1px solid rgba(0,255,136,0.04);
+  transition:background 0.15s;
+}
+.sb-row:last-child{border-bottom:none;}
+.sb-row.top1{background:rgba(201,168,76,0.07);}
+.sb-row.top2{background:rgba(180,180,180,0.04);}
+.sb-row.top3{background:rgba(180,100,30,0.04);}
+.sb-row.me-row{background:rgba(0,255,136,0.06);}
+
+.sb-rank{
+  font-size:13px;width:22px;flex-shrink:0;text-align:center;line-height:1;
+}
+.sb-rank.medal{font-size:15px;}
+.sb-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+.sb-name{font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3;}
+.sb-name.me{color:var(--gold2);}
+.sb-name.top1c{color:var(--gold2);}
+.sb-meta{font-size:9px;color:var(--muted);letter-spacing:0.5px;}
+.sb-score-col{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
+.sb-score{font-size:16px;color:var(--g1);font-weight:500;font-variant-numeric:tabular-nums;line-height:1.2;}
+.sb-score.gold{color:var(--gold2);}
+.sb-score-label{font-size:8px;color:var(--muted);letter-spacing:1px;}
+.sb-empty{font-size:10px;color:var(--muted);font-style:italic;padding:12px 16px;}
+.sb-footer{
+  padding:9px 16px;
+  border-top:1px solid rgba(0,255,136,0.07);
+  font-size:8px;color:var(--muted);letter-spacing:1px;
+  background:rgba(0,0,0,0.2);
+  text-align:center;
+}
+
+/* today's scorecard right panel rows */
+.sb-today-row{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 16px;
+  border-bottom:1px solid rgba(0,255,136,0.04);
+}
+.sb-today-row:last-child{border-bottom:none;}
+.sb-today-row.me-row{background:rgba(0,255,136,0.06);}
+.sb-today-rank{font-size:11px;width:22px;flex-shrink:0;text-align:center;color:var(--muted);}
+.sb-today-name{font-size:12px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-today-name.me{color:var(--gold2);}
+.sb-today-score{font-size:15px;font-weight:500;color:var(--g1);font-variant-numeric:tabular-nums;flex-shrink:0;}
+
 /* ── SETUP ───────────────────────────────────────── */
 #setup{
   position:fixed;top:0;left:0;right:0;bottom:0;z-index:20;
@@ -72,14 +147,10 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .go-eye{font-size:10px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;}
 .go-title{font-family:'Playfair Display',serif;font-size:clamp(26px,5vw,48px);color:var(--gold);margin-bottom:4px;text-shadow:0 0 28px rgba(201,168,76,0.32);}
 .go-sub{font-size:11px;color:var(--muted);margin-bottom:28px;letter-spacing:1px;}
-
-/* scorecard card */
 .scorecard{width:100%;background:rgba(7,26,14,0.9);border:1px solid rgba(0,255,136,0.13);border-radius:18px;overflow:hidden;margin-bottom:24px;}
 .sc-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:rgba(0,255,136,0.04);border-bottom:1px solid rgba(0,255,136,0.08);}
 .sc-username{font-size:16px;color:var(--gold2);letter-spacing:1px;}
 .sc-date{font-size:10px;color:var(--muted);}
-
-/* main scores row */
 .sc-scores{display:flex;border-bottom:1px solid rgba(0,255,136,0.07);}
 .sc-score-block{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 10px;}
 .sc-score-block+.sc-score-block{border-left:1px solid rgba(0,255,136,0.07);}
@@ -88,8 +159,6 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .sc-sv.gold{color:var(--gold2);}
 .sc-sv.new{color:var(--g1);position:relative;}
 .new-badge{font-size:9px;color:var(--bg);background:var(--g1);padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:1px;font-weight:500;}
-
-/* breakdown grid */
 .sc-breakdown{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(0,255,136,0.07);}
 .sc-brow{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:8px;}
 .sc-brow+.sc-brow{border-top:1px solid rgba(0,255,136,0.05);}
@@ -101,8 +170,6 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .sc-bv.pos{color:var(--g1);}
 .sc-bv.neg{color:var(--red2);}
 .sc-bv.gold{color:var(--gold2);}
-
-/* bonus log */
 .sc-log{padding:14px 24px;}
 .sc-log-title{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
 .sc-log-items{display:flex;flex-wrap:wrap;gap:6px;}
@@ -110,11 +177,8 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .sc-log-item.pos{background:rgba(0,255,136,0.1);color:var(--g1);border:1px solid rgba(0,255,136,0.2);}
 .sc-log-item.neg{background:rgba(255,68,85,0.1);color:var(--red2);border:1px solid rgba(255,68,85,0.2);}
 .sc-log-empty{font-size:10px;color:var(--muted);font-style:italic;}
-
-/* leaderboard section */
 .sc-lb{padding:14px 24px;border-top:1px solid rgba(0,255,136,0.07);}
 .sc-lb-title{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
-.sc-lb-rows{}
 .sc-lb-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(0,255,136,0.04);}
 .sc-lb-row:last-child{border-bottom:none;}
 .sc-lb-rank{font-size:11px;color:var(--muted);width:22px;flex-shrink:0;text-align:center;}
@@ -122,7 +186,6 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .sc-lb-name.me{color:var(--gold2);}
 .sc-lb-score{font-size:13px;color:var(--g1);font-weight:500;flex-shrink:0;}
 .sc-lb-loading{font-size:10px;color:var(--muted);font-style:italic;padding:6px 0;}
-
 .go-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(11px,1.6vw,13px);color:var(--muted);max-width:500px;text-align:center;line-height:1.9;margin-bottom:28px;opacity:0.8;}
 #btn-again{padding:12px 48px;background:linear-gradient(135deg,#005530,var(--g2));border:none;color:#030d06;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;letter-spacing:3px;font-family:'DM Mono',monospace;text-transform:uppercase;transition:all 0.2s;}
 #btn-again:hover{background:linear-gradient(135deg,var(--g2),var(--g1));transform:translateY(-1px);}
@@ -131,6 +194,111 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 .pop{position:fixed;pointer-events:none;z-index:15;font-family:'DM Mono',monospace;font-weight:500;animation:popUp 1s ease-out forwards;}
 @keyframes popUp{0%{opacity:1;transform:translateY(0) scale(1);}60%{opacity:1;}100%{opacity:0;transform:translateY(-65px) scale(1.05);}}
 
+/* ── MILESTONE OVERLAY ───────────────────────────── */
+#milestone-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:30;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 0.3s;
+}
+#milestone-overlay.show{opacity:1;}
+.milestone-inner{
+  display:flex;flex-direction:column;align-items:center;
+  animation:milestoneAnim 2.6s ease-out forwards;
+}
+@keyframes milestoneAnim{
+  0%{transform:scale(0.3);opacity:0;}
+  15%{transform:scale(1.15);opacity:1;}
+  30%{transform:scale(0.95);}
+  45%{transform:scale(1.05);}
+  60%{transform:scale(1);opacity:1;}
+  80%{opacity:1;}
+  100%{opacity:0;transform:scale(1.1);}
+}
+.ms-num{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(80px,18vw,160px);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-4px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2),#fff8e0,var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:none;
+  filter:drop-shadow(0 0 40px rgba(201,168,76,0.8));
+}
+.ms-label{
+  font-size:clamp(14px,3vw,22px);
+  color:var(--gold2);
+  letter-spacing:8px;
+  text-transform:uppercase;
+  margin-top:6px;
+  text-shadow:0 0 20px rgba(201,168,76,0.6);
+}
+.ms-bg-ring{
+  position:absolute;
+  width:clamp(200px,40vw,380px);
+  height:clamp(200px,40vw,380px);
+  border-radius:50%;
+  border:2px solid rgba(201,168,76,0.3);
+  animation:ringPulse 2.6s ease-out forwards;
+}
+@keyframes ringPulse{
+  0%{transform:scale(0.1);opacity:0;}
+  30%{transform:scale(1);opacity:0.7;}
+  100%{transform:scale(2.5);opacity:0;}
+}
+.ms-bg-ring2{
+  position:absolute;
+  width:clamp(160px,32vw,300px);
+  height:clamp(160px,32vw,300px);
+  border-radius:50%;
+  border:1px solid rgba(201,168,76,0.2);
+  animation:ringPulse2 2.6s ease-out 0.2s forwards;
+}
+@keyframes ringPulse2{
+  0%{transform:scale(0.1);opacity:0;}
+  30%{transform:scale(1);opacity:0.5;}
+  100%{transform:scale(2);opacity:0;}
+}
+
+/* active effect overlays */
+#effect-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:5;pointer-events:none;
+  opacity:0;transition:opacity 0.3s;
+  border:3px solid transparent;
+}
+#effect-overlay.speed-flash{
+  background:rgba(255,68,85,0.06);
+  border-color:rgba(255,68,85,0.5);
+  animation:redFlash 0.5s ease-out;
+}
+#effect-overlay.shrink-flash{
+  background:rgba(255,120,0,0.05);
+  border-color:rgba(255,140,0,0.4);
+  animation:redFlash 0.5s ease-out;
+}
+@keyframes redFlash{0%{opacity:1;}100%{opacity:0;}}
+
+/* active debuff indicators */
+#debuff-bar{
+  position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
+  z-index:12;display:flex;gap:8px;pointer-events:none;
+}
+.debuff-pill{
+  font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;
+  background:rgba(255,68,85,0.18);color:var(--red2);
+  border:1px solid rgba(255,68,85,0.35);
+  animation:debuffPulse 1s ease-in-out infinite alternate;
+}
+.debuff-pill.blue{
+  background:rgba(0,200,255,0.14);color:#44ddff;
+  border:1px solid rgba(0,200,255,0.3);
+  animation:none;
+}
+@keyframes debuffPulse{0%{opacity:0.6;}100%{opacity:1;}}
+
 #db-bar{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:10;font-size:9px;color:rgba(74,138,98,0.4);letter-spacing:1px;pointer-events:none;}
 </style>
 </head>
@@ -138,7 +306,7 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 <canvas id="bg-canvas"></canvas>
 <canvas id="game-canvas"></canvas>
 
-<!-- HUD: only score + best during game -->
+<!-- HUD -->
 <div id="hud">
   <div class="hb"><div class="hl">Score</div><div class="hv" id="hs">0</div></div>
   <div class="hud-center">
@@ -151,6 +319,37 @@ body{cursor:none;font-family:'DM Mono',monospace;}
 <!-- Setup -->
 <div id="setup">
   <div class="dlines"><div class="dl"></div><div class="dl"></div><div class="dl"></div><div class="dl"></div></div>
+
+  <!-- Left Sidebar: Global Top 5 -->
+  <div id="sidebar-left">
+    <div class="sb-header">
+      <div class="sb-header-icon">🌍</div>
+      <div class="sb-header-text">
+        <div class="sb-title">Global Top 5</div>
+        <div class="sb-subtitle">All-time today · Best scores</div>
+      </div>
+    </div>
+    <div class="sb-rows" id="sb-global-rows">
+      <div class="sb-empty">loading...</div>
+    </div>
+    <div class="sb-footer" id="sb-global-footer">refreshes every 30s</div>
+  </div>
+
+  <!-- Right Sidebar: Today's Full Scorecard by Ranking -->
+  <div id="sidebar-right">
+    <div class="sb-header">
+      <div class="sb-header-icon">📅</div>
+      <div class="sb-header-text">
+        <div class="sb-title">Today's Board</div>
+        <div class="sb-subtitle">All players · Ranked by score</div>
+      </div>
+    </div>
+    <div class="sb-rows" id="sb-today-rows">
+      <div class="sb-empty">loading...</div>
+    </div>
+    <div class="sb-footer" id="sb-today-footer">today's sessions</div>
+  </div>
+
   <div class="si">
     <div class="s-eye">Trader's Sanctuary</div>
     <div class="s-title">PROFIT<br/><span>BOUNCE</span></div>
@@ -173,13 +372,10 @@ body{cursor:none;font-family:'DM Mono',monospace;}
     <div class="go-sub" id="go-sub">Your discipline is your edge.</div>
 
     <div class="scorecard">
-      <!-- header -->
       <div class="sc-header">
         <div class="sc-username" id="sc-username">Trader</div>
         <div class="sc-date" id="sc-date"></div>
       </div>
-
-      <!-- main scores -->
       <div class="sc-scores">
         <div class="sc-score-block">
           <div class="sc-sl">This Session</div>
@@ -190,13 +386,11 @@ body{cursor:none;font-family:'DM Mono',monospace;}
           <div class="sc-sv gold" id="sc-best">0</div>
         </div>
         <div class="sc-score-block">
-          <div class="sc-sl">Today's #1</div>
+          <div class="sc-sl">All-Time #1</div>
           <div class="sc-sv gold" id="sc-top">—</div>
           <div style="font-size:9px;color:var(--muted);margin-top:3px;" id="sc-topname">—</div>
         </div>
       </div>
-
-      <!-- breakdown -->
       <div class="sc-breakdown">
         <div class="sc-brow"><span class="sc-bl">Base Bounces</span><span class="sc-bv pos" id="sc-bounces">0</span></div>
         <div class="sc-brow"><span class="sc-bl">Bonus Gains</span><span class="sc-bv pos" id="sc-bgains">+0</span></div>
@@ -205,17 +399,13 @@ body{cursor:none;font-family:'DM Mono',monospace;}
         <div class="sc-brow"><span class="sc-bl">Speed Reached</span><span class="sc-bv gold" id="sc-speed">1.0×</span></div>
         <div class="sc-brow"><span class="sc-bl">Net Score</span><span class="sc-bv pos" id="sc-net">0</span></div>
       </div>
-
-      <!-- bonus event log -->
       <div class="sc-log">
         <div class="sc-log-title">Bonus &amp; Penalty Events</div>
         <div class="sc-log-items" id="sc-log-items"><span class="sc-log-empty">no events this session</span></div>
       </div>
-
-      <!-- today's leaderboard -->
       <div class="sc-lb">
         <div class="sc-lb-title">Today's Leaderboard</div>
-        <div class="sc-lb-rows" id="sc-lb-rows"><div class="sc-lb-loading">loading...</div></div>
+        <div id="sc-lb-rows"><div class="sc-lb-loading">loading...</div></div>
       </div>
     </div>
 
@@ -224,54 +414,105 @@ body{cursor:none;font-family:'DM Mono',monospace;}
   </div>
 </div>
 
+<!-- Milestone overlay -->
+<div id="milestone-overlay">
+  <div class="ms-bg-ring"></div>
+  <div class="ms-bg-ring2"></div>
+  <div class="milestone-inner">
+    <div class="ms-num" id="ms-num">25</div>
+    <div class="ms-label" id="ms-label">MILESTONE</div>
+  </div>
+</div>
+
+<!-- Effect overlay -->
+<div id="effect-overlay"></div>
+
+<!-- Debuff bar -->
+<div id="debuff-bar"></div>
+
 <div id="db-bar"></div>
 
 <script>
 // ══════════════════════════════════════════
-//  SUPABASE CONFIG — replace these values
+//  SUPABASE CONFIG
 // ══════════════════════════════════════════
-const SUPABASE_URL = 'https://blsgydcxoivtckihtmag.supabase.co';
+const SUPABASE_URL = 'https://blsgydcxoivtckihtmag.supabase.co/rest/v1';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsc2d5ZGN4b2l2dGNraWh0bWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMjkwNTYsImV4cCI6MjA5MzYwNTA1Nn0.DWPvB66OO5_KAHt_NGDHjSeU213p9iSCPTth7ecAeeo';
-const DB_ON = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
-document.getElementById('db-bar').textContent = DB_ON
-  ? '' : '[ offline mode — add Supabase keys to enable live leaderboard ]';
+const DB_ON = true;
+document.getElementById('db-bar').textContent = '';
 
-// ── DB ────────────────────────────────────
-async function dbFetch(path,opts={}){
-  if(!DB_ON) return null;
+// ── DB ─────────────────────────────────────
+async function dbFetch(path, opts={}){
   try{
-    const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,
-        'Content-Type':'application/json','Prefer':opts.prefer||'return=representation'},
-      ...opts});
-    return r.ok?r.json():null;
-  }catch{return null;}
-}
-async function submitScore(username,score){
-  if(!DB_ON) return;
-  const today=new Date().toISOString().split('T')[0];
-  const ex=await dbFetch(`scores?username=eq.${encodeURIComponent(username)}&date=eq.${today}&select=id,score`);
-  if(ex&&ex.length>0){
-    if(score>ex[0].score)
-      await dbFetch(`scores?id=eq.${ex[0].id}`,{method:'PATCH',prefer:'return=minimal',
-        body:JSON.stringify({score,updated_at:new Date().toISOString()})});
-  } else {
-    await dbFetch('scores',{method:'POST',prefer:'return=minimal',
-      body:JSON.stringify({username,score,date:today})});
+    const url = `${SUPABASE_URL}/${path}`;
+    const headers = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+    };
+    if(opts.prefer) headers['Prefer'] = opts.prefer;
+    const r = await fetch(url, { ...opts, headers });
+    if(!r.ok){
+      console.error('DB error', r.status, await r.text());
+      return null;
+    }
+    const text = await r.text();
+    return text ? JSON.parse(text) : [];
+  } catch(e){
+    console.error('DB fetch failed', e);
+    return null;
   }
 }
-async function loadLeaderboard(){
-  const today=new Date().toISOString().split('T')[0];
-  return await dbFetch(`scores?date=eq.${today}&order=score.desc&limit=10&select=username,score`)||[];
+
+// Submit: upsert all-time best per username (no date uniqueness),
+// and also write a per-session row with date for today's board.
+async function submitScore(username, newScore){
+  const today = new Date().toISOString().split('T')[0];
+
+  // ── All-time: one row per username, keep highest score ──
+  const existing = await dbFetch(
+    `scores?username=eq.${encodeURIComponent(username)}&select=id,score`
+  );
+  if(existing && existing.length > 0){
+    if(newScore > existing[0].score){
+      await dbFetch(`scores?id=eq.${existing[0].id}`, {
+        method: 'PATCH',
+        prefer: 'return=minimal',
+        body: JSON.stringify({ score: newScore, date: today })
+      });
+    }
+  } else {
+    await dbFetch('scores', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify({ username, score: newScore, date: today })
+    });
+  }
 }
+
+// Global all-time leaderboard — all rows, best score per username, no date filter
+async function loadGlobalAllTime(){
+  return await dbFetch(`scores?order=score.desc&limit=200&select=username,score`) || [];
+}
+
+// Today's leaderboard — scores where date = today, all players
+async function loadLeaderboard(){
+  const today = new Date().toISOString().split('T')[0];
+  return await dbFetch(
+    `scores?date=eq.${today}&order=score.desc&limit=200&select=username,score`
+  ) || [];
+}
+
+// My personal best — highest score ever for this username
 async function loadMyBest(username){
-  const today=new Date().toISOString().split('T')[0];
-  const d=await dbFetch(`scores?username=eq.${encodeURIComponent(username)}&date=eq.${today}&select=score&order=score.desc&limit=1`);
-  return(d&&d.length)?d[0].score:0;
+  const d = await dbFetch(
+    `scores?username=eq.${encodeURIComponent(username)}&order=score.desc&limit=1&select=score`
+  );
+  return (d && d.length) ? d[0].score : 0;
 }
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-// ── Canvas ────────────────────────────────
+// ── Canvas ──────────────────────────────────
 const bgC=document.getElementById('bg-canvas'),bgCtx=bgC.getContext('2d');
 const gc=document.getElementById('game-canvas'),ctx=gc.getContext('2d');
 let W,H;
@@ -283,10 +524,25 @@ let mx=0,bx,by,vx,vy;
 let score=0,bounces=0,speedMult=1,myBest=0;
 let bword='PROFIT',bcolor='#00ff88',currentUser='Trader';
 let running=false,fid,bgFid,particles=[],prizes=[];
-
-// session stats for scorecard
 let statBonusGains=0,statPenalties=0,statPenaltyTotal=0,statMaxSpeed=1;
-let eventLog=[]; // {label, pts, neg}
+let eventLog=[];
+
+// ── Debuff state ────────────────────────────
+let debuffs={
+  speedBoost:   {active:false, timer:0, mult:1},      // increases ball speed temporarily
+  shrinkPaddle: {active:false, timer:0, ratio:1},     // shrinks paddle temporarily
+  shrinkScreen: {active:false, timer:0, ratio:1},     // shrinks visible screen area
+};
+// buff state (positive)
+let buffs={
+  bigPaddle:    {active:false, timer:0, ratio:1},     // inverted: bigger paddle
+  slowBall:     {active:false, timer:0, mult:1},      // inverted: slower ball
+};
+
+// ── Milestone tracking ──────────────────────
+const MILESTONES=[25,50,75,100,150,200,300];
+let shownMilestones=new Set();
+let milestoneTimeout=null;
 
 function getSpeedTarget(b){
   const thr=[5,9,13,16,19,22,24,26,28,30,32,34,36,38,40];
@@ -351,10 +607,22 @@ function drawBg(){
 }
 drawBg();
 
-// ── Helpers ───────────────────────────────
-function PW(){return Math.max(80,Math.min(160,W*0.11));}
+// ── Paddle helpers ──────────────────────────
+function PW(){
+  let base=Math.max(80,Math.min(160,W*0.11));
+  // apply shrink debuff
+  if(debuffs.shrinkPaddle.active) base*=debuffs.shrinkPaddle.ratio;
+  // apply big paddle buff
+  if(buffs.bigPaddle.active) base*=buffs.bigPaddle.ratio;
+  return Math.max(32,Math.min(280,base));
+}
 function padX(){return Math.max(0,Math.min(W-PW(),mx-PW()/2));}
 const PADY=()=>H-22;const PH=12;
+
+// Shrink screen ratio
+function screenRatio(){
+  return debuffs.shrinkScreen.active ? debuffs.shrinkScreen.ratio : 1;
+}
 
 function resetBall(){
   bx=W/2;by=H*0.32;
@@ -365,37 +633,162 @@ function spawnP(x,y,col,n){
   for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=1+Math.random()*3.5;
     particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1.5+Math.random()*2.5,c:col,a:1,d:0.025+Math.random()*0.03});}
 }
-function pop(x,y,txt,col){
+function pop(x,y,txt,col,big){
   const el=document.createElement('div');el.className='pop';el.textContent=txt;
-  el.style.cssText=`left:${x-32}px;top:${y-18}px;font-size:13px;color:${col||'#00ff88'};`;
+  const fs=big?'20px':'13px';
+  el.style.cssText=`left:${x-50}px;top:${y-18}px;font-size:${fs};color:${col||'#00ff88'};`;
   document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
 }
 
-// ── PRIZE TYPES — positive + negative ────
-// neg:true = penalty, shrink:true = shrinks paddle, half:true = halves score
-const PRIZE_TYPES=[
-  // POSITIVE
-  {label:'▲ +5',  pts:5,  neg:false, c:'#c9a84c'},
-  {label:'▲ +10', pts:10, neg:false, c:'#e8c97a'},
-  {label:'RALLY +3', pts:3, neg:false, c:'#44ffaa'},
-  {label:'SURGE ×2', pts:0, multi:true, neg:false, c:'#00ffcc'},
+// ── PRIZE TYPES ──────────────────────────────
+// New negative types: speedup, shrinkpad, shrinkscreen
+// New positive types: bigpad, slowball  (only after score 20)
+const PRIZE_TYPES_BASE=[
+  // POSITIVE always
+  {label:'▲ +5',    pts:5,  neg:false, c:'#c9a84c'},
+  {label:'▲ +10',   pts:10, neg:false, c:'#e8c97a'},
+  {label:'RALLY +3',pts:3,  neg:false, c:'#44ffaa'},
+  {label:'SURGE ×2',pts:0,  multi:true,neg:false, c:'#00ffcc'},
   {label:'ALPHA +8', pts:8, neg:false, c:'#88ff44'},
-  // NEGATIVE
-  {label:'CRASH −5',  pts:-5,  neg:true, c:'#ff4455'},
-  {label:'STOP −3',   pts:-3,  neg:true, c:'#ff6677'},
-  {label:'BEAR −8',   pts:-8,  neg:true, c:'#ff3344'},
-  {label:'HALT ÷2',   pts:0,   neg:true, half:true, c:'#ff5566'},
-  {label:'SLIP −10',  pts:-10, neg:true, c:'#ff2233'},
+  // NEGATIVE always
+  {label:'CRASH −5', pts:-5,  neg:true, c:'#ff4455'},
+  {label:'STOP −3',  pts:-3,  neg:true, c:'#ff6677'},
+  {label:'BEAR −8',  pts:-8,  neg:true, c:'#ff3344'},
+  {label:'HALT ÷2',  pts:0,   neg:true, half:true, c:'#ff5566'},
+  {label:'SLIP −10', pts:-10, neg:true, c:'#ff2233'},
 ];
-// weight positive more than negative (6 pos : 4 neg types, but we pick randomly from above)
-// actual ratio via spawn: 60% positive, 40% negative
+const PRIZE_TYPES_AFTER20_NEG=[
+  {label:'⚡ TURBO',  neg:true, special:'speedBoost',  c:'#ff8800', pts:0},
+  {label:'◀▶ TINY',   neg:true, special:'shrinkPaddle', c:'#ff6600', pts:0},
+  {label:'⊡ SQUEEZE', neg:true, special:'shrinkScreen', c:'#dd3300', pts:0},
+];
+const PRIZE_TYPES_AFTER20_POS=[
+  {label:'⊞ WIDE',    neg:false, special:'bigPaddle',  c:'#00ccff', pts:0},
+  {label:'❄ SLOW',    neg:false, special:'slowBall',   c:'#33aaff', pts:0},
+];
+
 function mkPrize(){
   let pool;
-  if(Math.random()<0.6) pool=PRIZE_TYPES.filter(p=>!p.neg);
-  else pool=PRIZE_TYPES.filter(p=>p.neg);
+  const afterBonus = score >= 20;
+
+  if(Math.random()<0.6){
+    pool=[...PRIZE_TYPES_BASE.filter(p=>!p.neg)];
+    if(afterBonus) pool.push(...PRIZE_TYPES_AFTER20_POS);
+  } else {
+    pool=[...PRIZE_TYPES_BASE.filter(p=>p.neg)];
+    if(afterBonus) pool.push(...PRIZE_TYPES_AFTER20_NEG);
+  }
   const o=pool[Math.floor(Math.random()*pool.length)];
   return{x:60+Math.random()*(W-120),y:60+Math.random()*(H*0.42),r:17,
     vx:(Math.random()-0.5)*1.3,vy:0.28+Math.random()*0.3,ttl:380,alpha:1,...o};
+}
+
+// ── Apply special effects ────────────────────
+function applySpecial(special,isNeg){
+  const DURATION=300; // frames ~5s at 60fps
+  if(special==='speedBoost'){
+    debuffs.speedBoost.active=true;
+    debuffs.speedBoost.timer=DURATION;
+    debuffs.speedBoost.mult=1.75;
+    flashEffect('speed-flash');
+    pop(W/2,H/2,'⚡ TURBO SPEED!','#ff8800',true);
+  } else if(special==='shrinkPaddle'){
+    debuffs.shrinkPaddle.active=true;
+    debuffs.shrinkPaddle.timer=DURATION;
+    debuffs.shrinkPaddle.ratio=0.45;
+    flashEffect('shrink-flash');
+    pop(W/2,H/2,'◀▶ TINY PAD!','#ff6600',true);
+  } else if(special==='shrinkScreen'){
+    debuffs.shrinkScreen.active=true;
+    debuffs.shrinkScreen.timer=Math.floor(DURATION*0.7);
+    debuffs.shrinkScreen.ratio=0.7;
+    flashEffect('shrink-flash');
+    pop(W/2,H/2,'⊡ SQUEEZE!','#dd3300',true);
+  } else if(special==='bigPaddle'){
+    buffs.bigPaddle.active=true;
+    buffs.bigPaddle.timer=DURATION;
+    buffs.bigPaddle.ratio=2.2;
+    pop(W/2,H/2,'⊞ WIDE PAD!','#00ccff',true);
+  } else if(special==='slowBall'){
+    buffs.slowBall.active=true;
+    buffs.slowBall.timer=DURATION;
+    buffs.slowBall.mult=0.5;
+    pop(W/2,H/2,'❄ SLOW BALL!','#33aaff',true);
+  }
+  updateDebuffBar();
+}
+
+function flashEffect(cls){
+  const el=document.getElementById('effect-overlay');
+  el.className='';
+  void el.offsetWidth;
+  el.className=cls;
+}
+
+function tickDebuffs(){
+  let changed=false;
+  for(const k of Object.keys(debuffs)){
+    if(debuffs[k].active){
+      debuffs[k].timer--;
+      if(debuffs[k].timer<=0){debuffs[k].active=false;changed=true;}
+    }
+  }
+  for(const k of Object.keys(buffs)){
+    if(buffs[k].active){
+      buffs[k].timer--;
+      if(buffs[k].timer<=0){buffs[k].active=false;changed=true;}
+    }
+  }
+  if(changed) updateDebuffBar();
+}
+
+function updateDebuffBar(){
+  const bar=document.getElementById('debuff-bar');
+  const pills=[];
+  if(debuffs.speedBoost.active) pills.push(`<div class="debuff-pill">⚡ TURBO ${debuffs.speedBoost.timer}f</div>`);
+  if(debuffs.shrinkPaddle.active) pills.push(`<div class="debuff-pill">◀▶ TINY PAD ${debuffs.shrinkPaddle.timer}f</div>`);
+  if(debuffs.shrinkScreen.active) pills.push(`<div class="debuff-pill">⊡ SQUEEZE ${debuffs.shrinkScreen.timer}f</div>`);
+  if(buffs.bigPaddle.active) pills.push(`<div class="debuff-pill blue">⊞ WIDE PAD ${buffs.bigPaddle.timer}f</div>`);
+  if(buffs.slowBall.active) pills.push(`<div class="debuff-pill blue">❄ SLOW ${buffs.slowBall.timer}f</div>`);
+  bar.innerHTML=pills.join('');
+}
+
+// ── Milestone display ────────────────────────
+function checkMilestone(s){
+  for(const m of MILESTONES){
+    if(s>=m && !shownMilestones.has(m)){
+      shownMilestones.add(m);
+      showMilestone(m);
+      break;
+    }
+  }
+}
+
+function showMilestone(num){
+  const labels={25:'QUARTER CENTURY',50:'HALF CENTURY',75:'THREE QUARTERS',
+    100:'ONE HUNDRED',150:'ON FIRE',200:'LEGENDARY',300:'IMMORTAL'};
+  document.getElementById('ms-num').textContent=num;
+  document.getElementById('ms-label').textContent=labels[num]||'MILESTONE';
+  const ov=document.getElementById('milestone-overlay');
+  // restart animation
+  ov.classList.remove('show');
+  void ov.offsetWidth;
+  ov.classList.add('show');
+  // re-trigger inner animation
+  const inner=ov.querySelector('.milestone-inner');
+  inner.style.animation='none';void inner.offsetWidth;inner.style.animation='';
+  const ring=ov.querySelector('.ms-bg-ring');
+  ring.style.animation='none';void ring.offsetWidth;ring.style.animation='';
+  const ring2=ov.querySelector('.ms-bg-ring2');
+  ring2.style.animation='none';void ring2.offsetWidth;ring2.style.animation='';
+  if(milestoneTimeout) clearTimeout(milestoneTimeout);
+  milestoneTimeout=setTimeout(()=>ov.classList.remove('show'),2700);
+  // spawn a bunch of particles from center
+  for(let i=0;i<30;i++){
+    const a=Math.random()*Math.PI*2,s=2+Math.random()*6;
+    particles.push({x:W/2,y:H/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:2+Math.random()*4,
+      c:Math.random()<0.5?'#c9a84c':'#e8c97a',a:1,d:0.015+Math.random()*0.02});
+  }
 }
 
 function updateHUD(){
@@ -403,28 +796,120 @@ function updateHUD(){
   document.getElementById('hbest').textContent=myBest;
 }
 
-// ── Game Loop ─────────────────────────────
+// ── Refresh home screen scoreboards ─────────
+async function refreshSidebar(){
+  const medals = ['🥇','🥈','🥉'];
+
+  // ── LEFT: Global All-Time Top 5 (no date filter) ──
+  const globalRows = await loadGlobalAllTime();
+  const globalEl = document.getElementById('sb-global-rows');
+  const footerEl = document.getElementById('sb-global-footer');
+  if(globalRows.length){
+    globalEl.innerHTML = globalRows.slice(0,5).map((r,i)=>{
+      const me = r.username.toLowerCase() === (currentUser||'').toLowerCase();
+      const isMedal = i < 3;
+      const rowClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
+      const nameClass = i===0?'top1c':'';
+      return `<div class="sb-row ${rowClass}${me?' me-row':''}">
+        <span class="sb-rank${isMedal?' medal':''}">${isMedal?medals[i]:i+1}</span>
+        <div class="sb-info">
+          <span class="sb-name ${nameClass}${me?' me':''}">${esc(r.username)}${me?' ◀':''}</span>
+        </div>
+        <div class="sb-score-col">
+          <span class="sb-score${i===0?' gold':''}">${r.score}</span>
+          <span class="sb-score-label">pts</span>
+        </div>
+      </div>`;
+    }).join('');
+    const now = new Date();
+    footerEl.textContent = `${globalRows.length} players all-time · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  } else {
+    globalEl.innerHTML = '<div class="sb-empty">no scores yet — be first!</div>';
+    footerEl.textContent = 'all-time rankings';
+  }
+
+  // ── RIGHT: Today's Full Ranking (all players today) ──
+  const todayRows = await loadLeaderboard();
+  const todayEl = document.getElementById('sb-today-rows');
+  const todayFooter = document.getElementById('sb-today-footer');
+  if(todayRows.length){
+    todayEl.innerHTML = todayRows.map((r,i)=>{
+      const me = r.username.toLowerCase() === (currentUser||'').toLowerCase();
+      const medal = i < 3 ? medals[i] : `${i+1}`;
+      return `<div class="sb-today-row${me?' me-row':''}">
+        <span class="sb-today-rank">${medal}</span>
+        <span class="sb-today-name${me?' me':''}">${esc(r.username)}${me?' ◀':''}</span>
+        <span class="sb-today-score">${r.score}</span>
+      </div>`;
+    }).join('');
+    todayFooter.textContent = `${todayRows.length} player${todayRows.length!==1?'s':''} today`;
+  } else {
+    todayEl.innerHTML = '<div class="sb-empty">no sessions yet today</div>';
+    todayFooter.textContent = 'play to appear here';
+  }
+}
+refreshSidebar();
+// Refresh every 30s while on page
+setInterval(refreshSidebar,30000);
+
+// ── Game Loop ────────────────────────────────
 function loop(){
+  if(!running) return;
+
+  tickDebuffs();
   ctx.clearRect(0,0,W,H);
-  const pw=PW(),px=padX(),pady=PADY();
+
+  // Shrink screen effect — draw a border/clip region
+  const sr=screenRatio();
+  const offX=sr<1?((1-sr)*W*0.5):0;
+  const offY=sr<1?((1-sr)*H*0.5):0;
+  const eW=W*sr, eH=H*sr;
+
+  if(sr<1){
+    // draw dark outside region
+    ctx.save();
+    ctx.fillStyle='rgba(0,0,0,0.75)';
+    ctx.fillRect(0,0,W,H);
+    // clip to play area
+    ctx.beginPath();
+    ctx.rect(offX,offY,eW,eH);
+    ctx.clip();
+    // border
+    ctx.strokeStyle='rgba(255,80,0,0.6)';ctx.lineWidth=3;
+    ctx.strokeRect(offX,offY,eW,eH);
+  }
+
+  const pw=PW(),px=padX();
+  const pady=sr<1?(offY+eH-22):PADY();
+
+  // effective boundaries
+  const bndL=sr<1?offX:0;
+  const bndR=sr<1?(offX+eW):W;
+  const bndT=sr<1?offY:0;
+
+  // compute effective ball speed with all modifiers
+  let spdMult=speedMult;
+  if(debuffs.speedBoost.active) spdMult*=debuffs.speedBoost.mult;
+  if(buffs.slowBall.active) spdMult*=buffs.slowBall.mult;
+
   bx+=vx;by+=vy;
-  if(bx-BALL_R<0){bx=BALL_R;vx=Math.abs(vx);spawnP(bx,by,bcolor,4);}
-  if(bx+BALL_R>W){bx=W-BALL_R;vx=-Math.abs(vx);spawnP(bx,by,bcolor,4);}
-  if(by-BALL_R<0){by=BALL_R;vy=Math.abs(vy);spawnP(bx,by,bcolor,4);}
+  if(bx-BALL_R<bndL){bx=bndL+BALL_R;vx=Math.abs(vx);spawnP(bx,by,bcolor,4);}
+  if(bx+BALL_R>bndR){bx=bndR-BALL_R;vx=-Math.abs(vx);spawnP(bx,by,bcolor,4);}
+  if(by-BALL_R<bndT){by=bndT+BALL_R;vy=Math.abs(vy);spawnP(bx,by,bcolor,4);}
 
   // paddle hit
   if(vy>0&&by+BALL_R>=pady-PH&&by+BALL_R<=pady+9&&bx>=px-4&&bx<=px+pw+4){
     by=pady-PH-BALL_R;
     const rel=(bx-(px+pw/2))/(pw/2);
-    vx=rel*BASE_SPD*speedMult*1.4;vy=-Math.abs(vy);
+    vx=rel*BASE_SPD*spdMult*1.4;vy=-Math.abs(vy);
     bounces++;score++;
+    checkMilestone(score);
     const nm=getSpeedTarget(bounces);
     if(nm>speedMult){speedMult=nm;pop(bx,pady-PH-20,'▲ FASTER','#ffdd44');}
     if(speedMult>statMaxSpeed)statMaxSpeed=speedMult;
-    const spd=Math.sqrt(vx*vx+vy*vy),tgt=BASE_SPD*speedMult;
+    const spd=Math.sqrt(vx*vx+vy*vy),tgt=BASE_SPD*spdMult;
     if(spd>0){vx=vx/spd*tgt;vy=vy/spd*tgt;}
     spawnP(bx,pady-PH,bcolor,9);
-    if(score>0&&score%25===0)pop(bx,pady-PH-20,'▲ '+score+' pts!','#c9a84c');
     if(score>myBest)myBest=score;
   }
 
@@ -437,9 +922,12 @@ function loop(){
     const p=prizes[i];const dx=bx-p.x,dy=by-p.y;
     if(Math.sqrt(dx*dx+dy*dy)<BALL_R+p.r){
       spawnP(p.x,p.y,p.c,p.neg?8:16);
-      let eventPts=0;
-      if(p.multi){
-        const g=score;score=score*2;eventPts=g;
+      if(p.special){
+        applySpecial(p.special,p.neg);
+        statPenalties+=(p.neg?1:0);
+        eventLog.push({label:p.label,neg:p.neg});
+      } else if(p.multi){
+        const g=score;score=score*2;
         pop(p.x,p.y,'×2! +'+g,p.c);
         statBonusGains+=g;
         eventLog.push({label:p.label+' +'+g,neg:false});
@@ -454,7 +942,7 @@ function loop(){
         statPenalties++;statPenaltyTotal+=pen;
         eventLog.push({label:p.label,neg:true});
       } else {
-        score+=p.pts;eventPts=p.pts;
+        score+=p.pts;
         pop(p.x,p.y,p.label,p.c);
         statBonusGains+=p.pts;
         eventLog.push({label:p.label,neg:false});
@@ -471,7 +959,6 @@ function loop(){
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
     ctx.fillStyle=p.c+(p.neg?'22':'18');ctx.fill();
     ctx.strokeStyle=p.c;ctx.lineWidth=p.neg?2:1.5;ctx.stroke();
-    // pulsing ring for negatives
     if(p.neg&&Math.sin(Date.now()*0.01)>0){
       ctx.beginPath();ctx.arc(p.x,p.y,p.r+4,0,Math.PI*2);
       ctx.strokeStyle=p.c+'44';ctx.lineWidth=1;ctx.stroke();
@@ -491,31 +978,43 @@ function loop(){
 
   // paddle
   ctx.save();ctx.shadowColor=bcolor;ctx.shadowBlur=15;
+  let padColor=bcolor;
+  if(debuffs.shrinkPaddle.active) padColor='#ff6600';
+  if(buffs.bigPaddle.active) padColor='#00ccff';
   const pg=ctx.createLinearGradient(px,0,px+pw,0);
-  pg.addColorStop(0,'rgba(0,70,35,0.5)');pg.addColorStop(0.5,bcolor);pg.addColorStop(1,'rgba(0,70,35,0.5)');
+  pg.addColorStop(0,'rgba(0,70,35,0.5)');pg.addColorStop(0.5,padColor);pg.addColorStop(1,'rgba(0,70,35,0.5)');
   ctx.fillStyle=pg;ctx.beginPath();ctx.roundRect(px,pady-PH,pw,PH,6);ctx.fill();
-  ctx.strokeStyle=bcolor+'60';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+  ctx.strokeStyle=padColor+'60';ctx.lineWidth=1;ctx.stroke();ctx.restore();
 
   // ball
-  ctx.save();ctx.shadowColor=bcolor;ctx.shadowBlur=20;
-  ctx.beginPath();ctx.arc(bx,by,BALL_R+2,0,Math.PI*2);ctx.strokeStyle=bcolor+'1e';ctx.lineWidth=3;ctx.stroke();
+  let ballColor=bcolor;
+  if(debuffs.speedBoost.active) ballColor='#ff8800';
+  if(buffs.slowBall.active) ballColor='#33aaff';
+  ctx.save();ctx.shadowColor=ballColor;ctx.shadowBlur=20;
+  ctx.beginPath();ctx.arc(bx,by,BALL_R+2,0,Math.PI*2);ctx.strokeStyle=ballColor+'1e';ctx.lineWidth=3;ctx.stroke();
   ctx.beginPath();ctx.arc(bx,by,BALL_R,0,Math.PI*2);
   const bg2=ctx.createRadialGradient(bx-3,by-3,1,bx,by,BALL_R);
-  bg2.addColorStop(0,bcolor+'55');bg2.addColorStop(1,bcolor+'18');
-  ctx.fillStyle=bg2;ctx.fill();ctx.strokeStyle=bcolor;ctx.lineWidth=1.6;ctx.stroke();
+  bg2.addColorStop(0,ballColor+'55');bg2.addColorStop(1,ballColor+'18');
+  ctx.fillStyle=bg2;ctx.fill();ctx.strokeStyle=ballColor;ctx.lineWidth=1.6;ctx.stroke();
   const fs=Math.max(5,Math.floor(19/Math.max(1,bword.length)));
   ctx.font=`500 ${fs}px 'DM Mono',monospace`;
   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowBlur=0;
   ctx.fillText(bword,bx,by);ctx.restore();
 
+  // cursor dot
   ctx.beginPath();ctx.arc(mx,pady-PH/2,3,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.4)';ctx.fill();
 
-  if(by-BALL_R>H+10){endGame();return;}
+  if(sr<1) ctx.restore(); // end clip
+
+  // game over condition — use effective bottom boundary
+  const loseY = sr<1 ? (offY+eH+10) : (H+10);
+  if(by-BALL_R > loseY){endGame();return;}
+
   updateHUD();
   fid=requestAnimationFrame(loop);
 }
 
-// ── Flow ──────────────────────────────────
+// ── Flow ──────────────────────────────────────
 async function startGame(){
   currentUser=(document.getElementById('iname').value.trim())||'Trader';
   bword=(document.getElementById('iword').value.toUpperCase().trim())||'PROFIT';
@@ -525,14 +1024,22 @@ async function startGame(){
   score=0;bounces=0;speedMult=1;
   statBonusGains=0;statPenalties=0;statPenaltyTotal=0;statMaxSpeed=1;
   eventLog=[];particles=[];prizes=[];
+  shownMilestones=new Set();
+  // reset debuffs/buffs
+  for(const k of Object.keys(debuffs)) debuffs[k]={active:false,timer:0,mult:1,ratio:1};
+  for(const k of Object.keys(buffs)) buffs[k]={active:false,timer:0,mult:1,ratio:1};
+  updateDebuffBar();
   resetBall();mx=W/2;
   document.getElementById('setup').style.display='none';
   document.getElementById('gameover').style.display='none';
   running=true;if(fid)cancelAnimationFrame(fid);loop();
+  refreshSidebar();
 }
 
 async function endGame(){
-  running=false;cancelAnimationFrame(fid);
+  if(!running) return; // prevent double-call
+  running=false;
+  cancelAnimationFrame(fid);
   if(score>myBest)myBest=score;
   await submitScore(currentUser,myBest);
 
@@ -549,7 +1056,6 @@ async function endGame(){
   document.getElementById('sc-speed').textContent=statMaxSpeed.toFixed(1)+'×';
   document.getElementById('sc-net').textContent=score;
 
-  // event log
   const logEl=document.getElementById('sc-log-items');
   if(eventLog.length===0){
     logEl.innerHTML='<span class="sc-log-empty">no bonus events this session</span>';
@@ -557,23 +1063,28 @@ async function endGame(){
     logEl.innerHTML=eventLog.map(e=>`<span class="sc-log-item ${e.neg?'neg':'pos'}">${esc(e.label)}</span>`).join('');
   }
 
-  // leaderboard
   const rows=await loadLeaderboard();
+  const globalRows=await loadGlobalAllTime();
   const lbEl=document.getElementById('sc-lb-rows');
   const medals=['🥇','🥈','🥉'];
+  // All-time #1
+  if(globalRows.length){
+    document.getElementById('sc-top').textContent=globalRows[0].score;
+    document.getElementById('sc-topname').textContent=globalRows[0].username;
+  } else {
+    document.getElementById('sc-top').textContent=myBest;
+    document.getElementById('sc-topname').textContent=currentUser;
+  }
+  // Today's leaderboard in scorecard
   if(rows.length){
-    const top=rows[0];
-    document.getElementById('sc-top').textContent=top.score;
-    document.getElementById('sc-topname').textContent=top.username;
-    lbEl.innerHTML=rows.slice(0,8).map((r,i)=>{
+    lbEl.innerHTML=rows.slice(0,10).map((r,i)=>{
       const me=r.username.toLowerCase()===currentUser.toLowerCase();
       return`<div class="sc-lb-row"><span class="sc-lb-rank">${medals[i]||(i+1)}</span><span class="sc-lb-name${me?' me':''}">${esc(r.username)}${me?' ◀':''}</span><span class="sc-lb-score">${r.score}</span></div>`;
     }).join('');
   } else {
-    document.getElementById('sc-top').textContent=myBest;
-    document.getElementById('sc-topname').textContent=currentUser;
     lbEl.innerHTML='<div class="sc-lb-loading">no other scores today yet</div>';
   }
+  refreshSidebar();
 
   const t=score>=30?'Masterful':score>=15?'Well Played':score>=5?'Good Session':'Keep Breathing';
   const s=score>=30?'The market bows to your patience.':score>=15?'Your discipline is your edge.':score>=5?'Every session builds resilience.':'Tomorrow is a new session.';
@@ -582,6 +1093,7 @@ async function endGame(){
   document.getElementById('go-quote').textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
   document.getElementById('gameover').style.display='flex';
   updateHUD();
+  refreshSidebar(); // so home screen is fresh when they hit "New Session"
 }
 
 window.addEventListener('mousemove',e=>{mx=e.clientX;});
